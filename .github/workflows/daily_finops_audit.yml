@@ -1,0 +1,40 @@
+name: Daily FinOps Spend Audit
+
+on:
+  schedule:
+    # Trigger daily at 08:00 UTC
+    - cron: '0 8 * * *'
+  workflow_dispatch: # Enable manual run from GitHub Actions tab
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run FinOps Inspector
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: 'us-east-1'
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          python main.py
+
+      - name: Upload Audit Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: finops-audit-report
+          path: finops_report.md

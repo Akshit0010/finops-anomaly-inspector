@@ -1,0 +1,6 @@
+.env
+.env*
+venv/
+__pycache__/
+*.pyc
+finops_report.md
