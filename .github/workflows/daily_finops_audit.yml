@@ -2,9 +2,8 @@ name: Daily FinOps Spend Audit
 
 on:
   schedule:
-    # Trigger daily at 08:00 UTC
     - cron: '0 8 * * *'
-  workflow_dispatch: # Enable manual run from GitHub Actions tab
+  workflow_dispatch:
 
 jobs:
   audit:
@@ -20,7 +19,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          pip install -r requirements.txt
+          pip install boto3 pandas numpy groq requests python-dotenv
 
       - name: Run FinOps Inspector
         env:
